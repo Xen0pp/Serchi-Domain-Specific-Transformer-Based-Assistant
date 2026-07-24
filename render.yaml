@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: serchi-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: MODEL_ID
+        value: Xen0pp/SmolLM-ML-Planner-500-V3
+    plan: starter
