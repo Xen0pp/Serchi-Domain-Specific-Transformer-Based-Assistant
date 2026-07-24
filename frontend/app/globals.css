@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: #0f0f0f;
+  color: #e4e2e1;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* Custom dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f0f0f;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f3f;
+}
+
+/* Streaming Blinking Cursor */
+.blinking-cursor::after {
+  content: '▋';
+  display: inline-block;
+  margin-left: 2px;
+  animation: blink 0.8s infinite;
+  color: #6366f1;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Markdown typography & list indentation overrides */
+.prose ul {
+  list-style-type: disc !important;
+  list-style-position: outside !important;
+  padding-left: 1.5rem !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.prose ol {
+  list-style-type: decimal !important;
+  list-style-position: outside !important;
+  padding-left: 1.5rem !important;
+  margin-top: 0.75rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+.prose li {
+  margin-top: 0.35rem !important;
+  margin-bottom: 0.35rem !important;
+  line-height: 1.625 !important;
+}
+
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.prose th, .prose td {
+  border: 1px solid #333333;
+  padding: 0.5rem 0.75rem;
+}
+
+.prose th {
+  background-color: #262626;
+  font-weight: 600;
+  text-align: left;
+}
+
+.prose tr:nth-child(even) {
+  background-color: #141414;
+}
