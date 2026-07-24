@@ -1,0 +1,7 @@
+# Ignore generated lock files from language statistics
+package-lock.json linguist-generated=true
+frontend/package-lock.json linguist-generated=true
+
+# Mark frontend UI components as vendored/secondary so Python remains the primary language
+frontend/** linguist-vendored=true
+backend/** linguist-detectable=true
