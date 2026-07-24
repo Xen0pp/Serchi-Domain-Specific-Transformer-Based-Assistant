@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server'
 export async function POST(req: Request) {
   try {
     const body = await req.json()
-    const upstream = await fetch("http://localhost:8000/api/chat", {
+    const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:8000'
+    const upstream = await fetch(`${BACKEND_URL}/api/chat`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
