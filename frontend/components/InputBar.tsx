@@ -50,7 +50,7 @@ export const InputBar: React.FC<InputBarProps> = ({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder={disabled ? "Model is still loading..." : "Ask about your ML project..."}
+          placeholder="Ask about your ML project..."
           disabled={disabled}
           rows={1}
           className="w-full bg-transparent text-[#e4e2e1] placeholder-[#666666] px-4 pt-3.5 pb-10 text-sm focus:outline-none resize-none min-h-[52px] max-h-[144px] leading-relaxed disabled:opacity-50"

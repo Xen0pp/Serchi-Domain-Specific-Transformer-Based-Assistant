@@ -16,6 +16,7 @@ interface SidebarProps {
   onNewChat: () => void
   onDeleteConversation: (id: string, e: React.MouseEvent) => void
   onClearAllChats?: () => void
+  modelStatus?: string
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -25,6 +26,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onNewChat,
   onDeleteConversation,
   onClearAllChats,
+  modelStatus = 'ready',
 }) => {
   return (
     <aside className="w-[260px] h-screen bg-[#202123] flex flex-col justify-between shrink-0 select-none z-20">
@@ -107,9 +109,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-3 bg-[#202123]">
         <div className="flex items-center justify-between px-2 py-1.5 rounded-lg bg-[#2a2b32] text-xs">
           <div className="flex items-center space-x-2 min-w-0">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className={`w-2 h-2 rounded-full animate-pulse ${
+              modelStatus === 'ready' ? 'bg-emerald-500' :
+              modelStatus === 'offline' ? 'bg-red-500' :
+              modelStatus === 'downloading' ? 'bg-amber-500' :
+              modelStatus === 'loading' ? 'bg-indigo-500' : 'bg-gray-400'
+            }`} />
             <span className="text-[11px] text-[#c8c6c5] truncate font-medium">
-              Powered by Serchi
+              {modelStatus === 'ready' ? 'Powered by Serchi' :
+               modelStatus === 'offline' ? 'Serchi (Offline Mode)' :
+               modelStatus === 'downloading' ? 'Serchi (Downloading...)' :
+               modelStatus === 'loading' ? 'Serchi (Loading...)' : 'Powered by Serchi'}
             </span>
           </div>
         </div>

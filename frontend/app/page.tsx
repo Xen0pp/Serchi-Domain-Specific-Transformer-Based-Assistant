@@ -18,10 +18,15 @@ export default function Home() {
   const abortControllerRef = useRef<AbortController | null>(null)
 
   // 1. Poll model status every 2s until ready
+  const checkStatus = async () => {
+    const status = await fetchModelStatus()
+    setModelStatus(status)
+  }
+
   useEffect(() => {
     let intervalId: NodeJS.Timeout
 
-    const checkStatus = async () => {
+    const poll = async () => {
       const status = await fetchModelStatus()
       setModelStatus(status)
       if (status === 'ready') {
@@ -29,8 +34,8 @@ export default function Home() {
       }
     }
 
-    checkStatus()
-    intervalId = setInterval(checkStatus, 2000)
+    poll()
+    intervalId = setInterval(poll, 2000)
 
     return () => clearInterval(intervalId)
   }, [])
@@ -131,10 +136,21 @@ export default function Home() {
     }
 
     const assistantMessageId = (Date.now() + 1).toString()
+    let offlineNotice = ''
+    if (modelStatus === 'offline') {
+      offlineNotice = "🔌 **Backend Server Offline**: The Python backend server on port 8000 is not running. Start it by running `./start.sh` in your terminal or configure `BACKEND_URL` to enable live AI responses."
+    } else if (modelStatus === 'downloading') {
+      offlineNotice = "⏳ **Model Downloading**: Serchi is currently downloading model weights (~720MB). Please wait a moment until the status changes to Ready."
+    } else if (modelStatus === 'loading') {
+      offlineNotice = "🚀 **Model Loading**: Model parameters are initializing in memory. Please wait a moment until the status shows Ready."
+    } else if (modelStatus === 'error') {
+      offlineNotice = "⚠️ **Model Load Error**: Failed to load HuggingFace model weights. Check backend logs and network connection."
+    }
+
     const assistantMessage: Message = {
       id: assistantMessageId,
       role: 'assistant',
-      content: '',
+      content: offlineNotice,
     }
 
     const convIndex = updatedConversations.findIndex((c) => c.id === currentConvId)
@@ -154,6 +170,12 @@ export default function Home() {
 
     saveConversationsToStorage(updatedConversations)
     if (!overridePrompt) setInput('')
+
+    // If model is not ready, do not attempt to stream chat backend call
+    if (modelStatus !== 'ready') {
+      return
+    }
+
     setIsStreaming(true)
 
     const targetConv = updatedConversations.find((c) => c.id === currentConvId)!
@@ -243,58 +265,8 @@ export default function Home() {
     }
   }
 
-  if (modelStatus === 'downloading') {
-    return <DownloadScreen />
-  }
-
-  if (modelStatus === 'loading') {
-    return <LoadingScreen />
-  }
-
-  if (modelStatus === 'offline') {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f0f0f] text-white p-6">
-        <div className="bg-[#171717] border border-amber-500/30 p-8 rounded-2xl max-w-md w-full text-center space-y-4 shadow-2xl">
-          <div className="w-12 h-12 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 text-2xl mx-auto animate-pulse">
-            🔌
-          </div>
-          <h2 className="text-xl font-bold text-amber-300">Backend Server Offline</h2>
-          <p className="text-xs text-[#8e8e8e] leading-relaxed">
-            The Python backend server on port 8000 is not running. Please start it by running <code className="bg-[#2a2a2a] text-indigo-300 px-1.5 py-0.5 rounded font-mono">./start.sh</code> in your terminal.
-          </p>
-          <button
-            onClick={() => setModelStatus('downloading')}
-            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm transition-colors shadow-lg"
-          >
-            Check Status Again
-          </button>
-        </div>
-      </div>
-    )
-  }
-
-  if (modelStatus === 'error') {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-[#0f0f0f] text-white p-6">
-        <div className="bg-[#171717] border border-red-500/30 p-8 rounded-2xl max-w-md w-full text-center space-y-4 shadow-2xl">
-          <div className="text-4xl">⚠️</div>
-          <h2 className="text-xl font-bold text-red-400">Failed to load ML Model</h2>
-          <p className="text-xs text-[#8e8e8e]">
-            Make sure the Python backend is running on port 8000 and has internet access to download HuggingFace weights.
-          </p>
-          <button
-            onClick={() => setModelStatus('downloading')}
-            className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium text-sm transition-colors"
-          >
-            Retry Connection
-          </button>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#0f0f0f]">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#343541]">
       <Sidebar
         conversations={conversations}
         activeId={activeId}
@@ -302,6 +274,7 @@ export default function Home() {
         onNewChat={handleNewChat}
         onDeleteConversation={handleDeleteConversation}
         onClearAllChats={handleClearAllChats}
+        modelStatus={modelStatus}
       />
 
       <ChatWindow
@@ -312,6 +285,8 @@ export default function Home() {
         onStop={handleStop}
         isStreaming={isStreaming}
         modelReady={modelStatus === 'ready'}
+        modelStatus={modelStatus}
+        onRetryConnection={checkStatus}
       />
     </div>
   )
