@@ -17,7 +17,11 @@ MODEL_CACHE_DIR = os.path.join(BASE_DIR, "models")
 
 SYSTEM_PROMPT = "You are an expert ML project planning advisor. Provide clear, structured, well-formatted markdown answers with numbered lists, bullet points, and code blocks where appropriate."
 
-app = FastAPI(title="Serchi Backend")
+app = FastAPI(
+    title="Serchi AI Backend",
+    description="Domain-Specific Transformer-Based Assistant for ML & System Planning",
+    version="1.0.0",
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -87,6 +91,16 @@ def load_model():
         print(f"❌ Model load error: {e}")
 
 threading.Thread(target=load_model, daemon=True).start()
+
+@app.get("/api/health")
+def health_check():
+    return {
+        "status": "healthy" if model_status == "ready" else "initializing",
+        "model_id": MODEL_ID,
+        "model_status": model_status,
+        "device": device,
+        "framework": "PyTorch & Transformers",
+    }
 
 @app.get("/api/status")
 def status():
