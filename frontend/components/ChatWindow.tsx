@@ -26,6 +26,7 @@ const EXAMPLE_PROMPTS = [
   "Create a 3-month timeline & dataset pipeline for training an LLM on domain data",
   "How do I choose between LoRA fine-tuning vs Full Fine-Tuning for a 7B model?",
   "Design an MLOps pipeline for computer vision model deployment & monitoring",
+  "Calculate GPU VRAM requirements and optimal batch size for 13B LLM inference",
 ]
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({
@@ -165,7 +166,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
               </div>
 
               {/* Example Prompt Chips */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full max-w-3xl pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-3xl pt-2">
                 {EXAMPLE_PROMPTS.map((promptText, i) => (
                   <button
                     key={i}

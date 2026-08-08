@@ -28,6 +28,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onClearAllChats,
   modelStatus = 'ready',
 }) => {
+  // Global Keyboard Shortcut: Cmd/Ctrl + K for New Chat
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        onNewChat()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onNewChat])
+
   return (
     <aside className="w-[260px] h-screen bg-[#202123] flex flex-col justify-between shrink-0 select-none z-20">
       {/* Top Header & New Chat */}
@@ -46,10 +58,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <button
           onClick={onNewChat}
-          className="w-full py-2.5 px-4 bg-[#343541] hover:bg-[#40414f] text-white font-medium text-sm rounded-xl transition-all duration-150 flex items-center justify-center space-x-2 shadow-sm active:scale-[0.98]"
+          className="w-full py-2.5 px-3.5 bg-[#343541] hover:bg-[#40414f] text-white font-medium text-sm rounded-xl transition-all duration-150 flex items-center justify-between shadow-sm active:scale-[0.98] group"
+          title="Start a new chat (Cmd + K / Ctrl + K)"
         >
-          <span className="text-lg leading-none">＋</span>
-          <span>New Chat</span>
+          <div className="flex items-center space-x-2">
+            <span className="text-lg leading-none">＋</span>
+            <span>New Chat</span>
+          </div>
+          <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono text-[#8e8e8e] group-hover:text-white bg-[#202123] rounded border border-[#4a4b57] transition-colors">
+            ⌘K
+          </kbd>
         </button>
       </div>
 
